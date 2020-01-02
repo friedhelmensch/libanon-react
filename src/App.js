@@ -12,8 +12,8 @@ import Paper from "@material-ui/core/Paper";
 import moment from "moment";
 
 const useStyles = makeStyles({
-  table: {
-    minWidth: 650
+  tablecell: {
+    fontSize: "12pt"
   }
 });
 
@@ -38,7 +38,7 @@ function convert(stopEvents) {
 
 function App() {
   const [data, setData] = useState({ stops: [] });
-
+  console.log("Version 1");
   useEffect(() => {
     const fetchData = async () => {
       var now = new Date();
@@ -63,7 +63,7 @@ function App() {
 
       const result = await axios(
         "https://yacdn.org/proxy/" +
-          "https://www3.vvs.de/mngvvs/XML_DM_REQUEST?SpEncId=0&coordOutputFormat=EPSG:4326&deleteAssignedStops=1&limit=5&macroWebDep=true&mode=direct&name_dm=de:08111:2201&outputFormat=rapidJSON&serverInfo=1&type_dm=any&useRealtime=1&version=10.2.10.139" +
+          "https://www3.vvs.de/mngvvs/XML_DM_REQUEST?SpEncId=0&coordOutputFormat=EPSG:4326&deleteAssignedStops=1&limit=10&macroWebDep=true&mode=direct&name_dm=de:08111:2201&outputFormat=rapidJSON&serverInfo=1&type_dm=any&useRealtime=1&version=10.2.10.139" +
           "&itdDate=" +
           dateString +
           "&itdTime=" +
@@ -83,30 +83,42 @@ function App() {
   const classes = useStyles();
 
   return (
-    <TableContainer component={Paper}>
-      <Table className={classes.table} aria-label="simple table">
-        <TableHead>
-          <TableRow>
-            <TableCell>Richtung</TableCell>
-            <TableCell align="right">Minuten</TableCell>
-            <TableCell align="right">Uhrzeit</TableCell>
-            <TableCell align="right">Linie</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {data.stops.map(row => (
-            <TableRow key={row.departureTime + row.name}>
-              <TableCell component="th" scope="row">
-                {row.name}
-              </TableCell>
-              <TableCell align="right">{row.minutes}</TableCell>
-              <TableCell align="right">{row.departureTime}</TableCell>
-              <TableCell align="right">{row.lineNumber}</TableCell>
+    <div>
+      <TableContainer component={Paper}>
+        <Table className={classes.table} aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <TableCell>Richtung</TableCell>
+              <TableCell align="right">Minuten</TableCell>
+              <TableCell align="right">Abfahrt</TableCell>
+              <TableCell align="right">Linie</TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+          </TableHead>
+          <TableBody>
+            {data.stops.map(row => (
+              <TableRow key={row.departureTime + row.name}>
+                <TableCell
+                  className={classes.tablecell}
+                  component="th"
+                  scope="row"
+                >
+                  {row.name}
+                </TableCell>
+                <TableCell className={classes.tablecell} align="right">
+                  {row.minutes}
+                </TableCell>
+                <TableCell className={classes.tablecell} align="right">
+                  {row.departureTime}
+                </TableCell>
+                <TableCell className={classes.tablecell} align="right">
+                  {row.lineNumber}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </div>
   );
 }
 
