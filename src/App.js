@@ -13,9 +13,10 @@ import { emojify } from "react-emojione";
 
 const useStyles = makeStyles({
   tablecell: {
-    fontSize: "16pt",
+    fontSize: "20pt",
     backgroundColor: "black",
-    color: "orange"
+    color: "orange",
+    fontFamily: "LEDFont"
   }
 });
 
@@ -49,7 +50,6 @@ function App() {
               <TableCell align="right">Symbol</TableCell>
               <TableCell align="right">Minuten</TableCell>
               <TableCell align="right">Abfahrt</TableCell>
-              <TableCell align="right">Linie</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -70,9 +70,6 @@ function App() {
                 </TableCell>
                 <TableCell className={classes.tablecell} align="right">
                   {row.departureTime}
-                </TableCell>
-                <TableCell className={classes.tablecell} align="right">
-                  {row.lineNumber}
                 </TableCell>
               </TableRow>
             ))}
