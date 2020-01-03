@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
-import axios from "axios";
 import { makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -9,7 +8,7 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
-import moment from "moment";
+import { fetchStops } from "./fetching";
 
 const useStyles = makeStyles({
   tablecell: {
@@ -17,65 +16,20 @@ const useStyles = makeStyles({
   }
 });
 
-function convert(stopEvents) {
-  return stopEvents.map(x => {
-    const departureTime = x.departureTimeEstimated
-      ? x.departureTimeEstimated
-      : x.departureTimePlanned;
-
-    const name = x.transportation.destination.name;
-
-    const timeUntilNow = new Date(departureTime) - new Date();
-    const minutes = Math.round(timeUntilNow / 1000 / 60);
-    return {
-      departureTime: moment(departureTime).format("HH:mm"),
-      minutes,
-      name,
-      lineNumber: x.transportation.number
-    };
-  });
-}
-
 function App() {
+  console.log(fetchStops);
   const [data, setData] = useState({ stops: [] });
-  console.log("Version 1");
+  console.log("Version 2");
+
   useEffect(() => {
-    const fetchData = async () => {
-      var now = new Date();
-      const year = now.getFullYear().toString();
-      const monthNumber = now.getMonth() + 1;
-      const month =
-        monthNumber < 10 ? "0" + monthNumber : monthNumber.toString();
-
-      const dayNumber = now.getDate();
-      const day = dayNumber < 10 ? "0" + dayNumber : dayNumber.toString();
-
-      const dateString = year + month + day;
-
-      const hourNumber = moment(now).hours();
-      const hour = hourNumber < 10 ? "0" + hourNumber : hourNumber.toString();
-
-      const minuteNumber = moment(now).minute();
-      const minute =
-        minuteNumber < 10 ? "0" + minuteNumber : minuteNumber.toString();
-
-      const timeString = hour + minute;
-
-      const result = await axios(
-        "https://yacdn.org/proxy/" +
-          "https://www3.vvs.de/mngvvs/XML_DM_REQUEST?SpEncId=0&coordOutputFormat=EPSG:4326&deleteAssignedStops=1&limit=10&macroWebDep=true&mode=direct&name_dm=de:08111:2201&outputFormat=rapidJSON&serverInfo=1&type_dm=any&useRealtime=1&version=10.2.10.139" +
-          "&itdDate=" +
-          dateString +
-          "&itdTime=" +
-          timeString
-      );
-
-      var newStops = convert(result.data.stopEvents);
-      setData({ stops: newStops });
+    const fetchAndUpdate = async () => {
+      const stops = await fetchStops();
+      setData({ stops });
     };
-    fetchData();
+    fetchAndUpdate();
+
     const interval = setInterval(() => {
-      fetchData();
+      fetchAndUpdate();
     }, 30000);
     return () => clearInterval(interval);
   }, []);
