@@ -2,22 +2,47 @@ import axios from "axios";
 import moment from "moment";
 
 function convert(stopEvents) {
-  return stopEvents.map(x => {
-    const departureTime = x.departureTimeEstimated
-      ? x.departureTimeEstimated
-      : x.departureTimePlanned;
+  return stopEvents
+    .filter(x => x.transportation.number === "42")
+    .map(x => {
+      const departureTime = x.departureTimeEstimated
+        ? x.departureTimeEstimated
+        : x.departureTimePlanned;
 
-    const name = x.transportation.destination.name;
+      const name = convertDestinationName(x.transportation.destination.name);
+      const emoji = convertToEmoji(x.transportation.destination.name);
+      const timeUntilNow = new Date(departureTime) - new Date();
+      const minutes = Math.round(timeUntilNow / 1000 / 60);
+      return {
+        departureTime: moment(departureTime).format("HH:mm"),
+        minutes,
+        name,
+        lineNumber: x.transportation.number,
+        emoji
+      };
+    });
+}
 
-    const timeUntilNow = new Date(departureTime) - new Date();
-    const minutes = Math.round(timeUntilNow / 1000 / 60);
-    return {
-      departureTime: moment(departureTime).format("HH:mm"),
-      minutes,
-      name,
-      lineNumber: x.transportation.number
-    };
-  });
+function convertDestinationName(destinationName) {
+  switch (destinationName) {
+    case "Erwin-Schoettle-Platz":
+      return "Hauptbahnhof";
+    case "Schlossplatz":
+      return "Schlossplatz";
+    default:
+      return "";
+  }
+}
+
+function convertToEmoji(destinationName) {
+  switch (destinationName) {
+    case "Erwin-Schoettle-Platz":
+      return ":steam_locomotive:";
+    case "Schlossplatz":
+      return ":cityscape:";
+    default:
+      return "";
+  }
 }
 
 const getDateAndTimeString = date => {
@@ -45,14 +70,17 @@ const getDateAndTimeString = date => {
 const fetchStops = async () => {
   const { date, time } = getDateAndTimeString(new Date());
 
-  const result = await axios(
+  const queryString =
     "https://yacdn.org/proxy/" +
-      "https://www3.vvs.de/mngvvs/XML_DM_REQUEST?SpEncId=0&coordOutputFormat=EPSG:4326&deleteAssignedStops=1&limit=10&macroWebDep=true&mode=direct&name_dm=de:08111:2201&outputFormat=rapidJSON&serverInfo=1&type_dm=any&useRealtime=1&version=10.2.10.139" +
-      "&itdDate=" +
-      date +
-      "&itdTime=" +
-      time
-  );
+    "https://www3.vvs.de/mngvvs/XML_DM_REQUEST?SpEncId=0&coordOutputFormat=EPSG:4326&deleteAssignedStops=1&macroWebDep=true&mode=direct&name_dm=de:08111:2201&outputFormat=rapidJSON&serverInfo=1&type_dm=any&useRealtime=1&version=10.2.10.139" +
+    "&limit=10" +
+    "&itdDate=" +
+    date +
+    "&itdTime=" +
+    time;
+  console.log(queryString);
+
+  const result = await axios(queryString);
   return convert(result.data.stopEvents);
 };
 

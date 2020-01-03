@@ -9,17 +9,20 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import { fetchStops } from "./fetching";
+import { emojify } from "react-emojione";
 
 const useStyles = makeStyles({
   tablecell: {
-    fontSize: "12pt"
+    fontSize: "16pt",
+    backgroundColor: "black",
+    color: "orange"
   }
 });
 
 function App() {
   const [data, setData] = useState({ stops: [] });
 
-  console.log("Version 2");
+  console.log("Version 3");
 
   useEffect(() => {
     const fetchAndUpdate = async () => {
@@ -43,6 +46,7 @@ function App() {
           <TableHead>
             <TableRow>
               <TableCell>Richtung</TableCell>
+              <TableCell align="right">Symbol</TableCell>
               <TableCell align="right">Minuten</TableCell>
               <TableCell align="right">Abfahrt</TableCell>
               <TableCell align="right">Linie</TableCell>
@@ -57,6 +61,9 @@ function App() {
                   scope="row"
                 >
                   {row.name}
+                </TableCell>
+                <TableCell className={classes.tablecell} align="right">
+                  {emojify(row.emoji)}
                 </TableCell>
                 <TableCell className={classes.tablecell} align="right">
                   {row.minutes}
