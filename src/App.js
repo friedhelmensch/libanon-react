@@ -17,8 +17,8 @@ const useStyles = makeStyles({
 });
 
 function App() {
-  console.log(fetchStops);
   const [data, setData] = useState({ stops: [] });
+
   console.log("Version 2");
 
   useEffect(() => {
