@@ -69,19 +69,38 @@ const getDateAndTimeString = date => {
 
 const fetchStops = async () => {
   const { date, time } = getDateAndTimeString(new Date());
+  const limit = 15;
 
-  const queryString =
-    "https://yacdn.org/proxy/" +
-    "https://www3.vvs.de/mngvvs/XML_DM_REQUEST?SpEncId=0&coordOutputFormat=EPSG:4326&deleteAssignedStops=1&macroWebDep=true&mode=direct&name_dm=de:08111:2201&outputFormat=rapidJSON&serverInfo=1&type_dm=any&useRealtime=1&version=10.2.10.139" +
-    "&limit=10" +
-    "&itdDate=" +
-    date +
-    "&itdTime=" +
-    time;
-  console.log(queryString);
+  const corsAnywhereProxy = "https://cors-anywhere.herokuapp.com/";
+  const allOriginsProxy = "https://api.allorigins.win/raw?url=";
 
-  const result = await axios(queryString);
-  return convert(result.data.stopEvents);
+  //works only for a maximum of limit=10 (limit = 11 does not return)
+  //const yacdnProxy = "https://yacdn.org/proxy/";
+
+  const baseRequest = `https://www3.vvs.de/mngvvs/XML_DM_REQUEST\
+?&limit=${limit}\
+&itdDate=${date}\
+&itdTime=${time}\
+&SpEncId=0\
+&coordOutputFormat=EPSG:4326\
+&deleteAssignedStops=1\
+&macroWebDep=true\
+&mode=direct\
+&name_dm=de:08111:2201\
+&outputFormat=rapidJSON&serverInfo=1\
+&type_dm=any\
+&useRealtime=1\
+&version=10.2.10.139`;
+
+  try {
+    const request = `${allOriginsProxy}${encodeURIComponent(baseRequest)}`;
+    const result = await axios(request);
+    return convert(result.data.stopEvents);
+  } catch {
+    const fallbackRequest = `${corsAnywhereProxy}${baseRequest}`;
+    const result = await axios(fallbackRequest);
+    return convert(result.data.stopEvents);
+  }
 };
 
 export { fetchStops, getDateAndTimeString };
