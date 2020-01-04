@@ -27,10 +27,8 @@ function convertDestinationName(destinationName) {
   switch (destinationName) {
     case "Erwin-Schoettle-Platz":
       return "Hauptbahnhof";
-    case "Schlossplatz":
-      return "Schlossplatz";
     default:
-      return "";
+      return destinationName;
   }
 }
 
@@ -41,7 +39,7 @@ function convertToEmoji(destinationName) {
     case "Schlossplatz":
       return ":cityscape:";
     default:
-      return "";
+      return ":grey_question:";
   }
 }
 
