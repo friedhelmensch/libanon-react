@@ -11,8 +11,11 @@ function convert(stopEvents) {
 
       const name = convertDestinationName(x.transportation.destination.name);
       const emoji = convertToEmoji(x.transportation.destination.name);
-      const timeUntilNow = new Date(departureTime) - new Date();
-      const minutes = Math.round(timeUntilNow / 1000 / 60);
+      const minutes = () => {
+        const millisecondsUntilNow = new Date(departureTime) - new Date();
+        const minutesUntilNow = millisecondsUntilNow / 1000 / 60;
+        return Math.round(minutesUntilNow);
+      };
       return {
         departureTime: moment(departureTime).format("HH:mm"),
         minutes,
